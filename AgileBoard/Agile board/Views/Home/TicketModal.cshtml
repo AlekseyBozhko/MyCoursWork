@@ -1,0 +1,66 @@
+﻿@model  Agile_board.Models.UnitOfWork
+
+@{
+    var currModalId = "";
+    string action = "";
+    if (Model.Ticket != null)
+    {
+        action = "EditTicket";
+        currModalId = "EditModalFor" + Model.Column.Name.Replace(" ", string.Empty) + Model.Ticket.Id + "Id";
+    }
+    else
+    {
+        action = "AddTicket";
+        currModalId = "AdditionModalFor" + Model.Column.Name.Replace(" ", string.Empty) + "Id";
+    }
+}
+
+<div class="modal fade" id="@currModalId" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            @using (Html.BeginForm(@action, "Home", new { columnName = Model.Column.Name }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        @{
+                            if (action == "AddTicket")
+                            {
+                                <text>Add ticket to @Model.Column.Name</text>
+                            }
+                            else
+                            {
+                                <text>Edit ticket</text>
+                            }
+                        }
+                    </h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @{
+                        if (action == "EditTicket")
+                        {
+                            @Html.HiddenFor(m => m.Ticket.Id)
+                            @Html.HiddenFor(m => m.Ticket.ColumnId)
+                        }
+                    }
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Ticket.Name, "Title")
+                        @Html.EditorFor(m => m.Ticket.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Write a title" } })
+                        @Html.ValidationMessageFor(m => m.Ticket.Name, "", htmlAttributes: new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Ticket.Description, "Description")
+                        @Html.TextAreaFor(m => m.Ticket.Description, htmlAttributes: new { @class = "form-control", @rows = "3" })
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" value=@action class="btn btn-secondary" />
+                </div>
+            }
+        </div>
+    </div>
+</div>

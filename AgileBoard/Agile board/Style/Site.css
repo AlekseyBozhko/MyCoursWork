@@ -1,0 +1,47 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.circleButton {
+    color: black;
+    border: 1px solid azure;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    box-shadow: 0 0 3px grey;
+    font-size: 80%;
+    transition-duration: 0.4s;
+}
+
+.circleButton:hover {
+    cursor:pointer;
+    background-color: #E7E7DB;
+}
+
+.circleButton:focus {
+    outline: 0;
+}
+
+.btnImg {
+    width: 26px;
+    height: 26px;
+    border: none !important;
+    padding: 0px !important;
+    padding-left: 5px !important;
+}
+
+.btnImg:focus {
+    outline: 0;
+}
+
+.plToInc {
+
+}
+
+

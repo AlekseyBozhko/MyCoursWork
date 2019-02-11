@@ -1,0 +1,111 @@
+﻿@model  Agile_board.Models.UnitOfWork
+
+@{
+    var columnName = Model.Column.Name.Replace(" ", string.Empty);
+    var ticketId = Model.Ticket.Id;
+
+    var editButnId = "EditButton" + Model.Ticket.Id;
+    var deleteButnId = "DeleteButton" + Model.Ticket.Id; ;
+    var cardHeaderId = "cardHeader" + Model.Ticket.Id; ;
+    var mainDivWithBtnsId = "divWithBtns" + Model.Ticket.Id + "Id";
+    var whapperDiv = "wrapperDiv" + Model.Ticket.Id + "Id";
+
+    var currVivWithBtns = "Div" + columnName + Model.Ticket.Id + "Id";
+    var modalIdToOpen = "EditModalFor" + columnName + Model.Ticket.Id + "Id";
+}
+<div class="card bg-light border-secondary mb-3" style="min-width: 310px; max-width: 320px;">
+    <div Id="@cardHeaderId" class="card-header headerRules">
+        @Model.Ticket.Name
+
+        <div id="@whapperDiv">
+            <div id="@mainDivWithBtnsId" class="row ">
+                <div class="col-8">
+                    <div Id="@currVivWithBtns" class="row no-gutters justify-content-start">
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="row no-gutters justify-content-end">
+                        <div class="col-sm-auto">
+                            <button Id="@editButnId" class="btn btn-outline-light btnImg">
+                                <img src="~/Style/edit_icon.png" alt="Edit" style="width: 18px; height: 18px" data-toggle="modal" data-target="#@modalIdToOpen" />
+                            </button>
+                        </div>
+                        <div class="col-sm-auto">
+                            @using (Html.BeginForm("DeleteTicket", "Home", new { ticketId = Model.Ticket.Id }))
+                            {
+                                <button Id="@deleteButnId" class="btn btn-outline-light btnImg" type="submit">
+                                    <img src="~/Style/delete_icon.png" alt="Edit" style="width: 18px; height: 18px" />
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <p class="card-text"> @Model.Ticket.Description</p>
+    </div>
+</div>
+
+<script>
+    var placeToIncert = $("#@currVivWithBtns");
+    var imgSources = getImgSource("@columnName");
+
+
+    placeToIncert.append(generateDivWithBtn(imgSources[0]));
+    placeToIncert.append(generateDivWithBtn(imgSources[1]));
+
+    function getImgSource(columnName) {
+        if (columnName === "TODO")
+            return ["inProgress_icon.png", "done_icon.png"];
+        if (columnName === "InProgress")
+            return ["todo_icon.png", "done_icon.png"];
+        if (columnName === "Done")
+            return ["todo_icon.png", "inProgress_icon.png"];
+    }
+
+    function generateDivWithBtn(imgSource) {
+        var div = $("<div class='col-sm-auto'>");
+        var btn = $("<button class='btn btn-outline-light btnImg'>");
+        var img = $("<img alt='Edit' style='width: 18px; height: 18px' />");
+        var btnId = imgSource.replace("_icon.png", "") + "btn" + "@ticketId" + "Id";
+
+        btn.attr("Id", btnId);
+        btn.attr("toggle", "tooltip");
+        btn.attr("placement", "top");
+        btn.attr("title", "Move to " + "'" + getRealColumnName(imgSource) + "'");
+        btn.click(function () { submit(getRealColumnName(imgSource), "@ticketId" ); }); 
+        img.attr("src", "/Style/" + imgSource);
+        btn.append(img);
+        div.append(btn);
+        return div;
+    }
+
+    function getRealColumnName(source) {
+        var colName = source.replace("_icon.png", "");
+        if (colName === "todo") return "TO DO";
+        if (colName === "inProgress") return "In Progress";
+        if (colName === "done") return "Done";
+    }
+
+    function submit(targetColumn, ticketId) {
+        $.ajax({
+            type: "POST",
+            url: "/Home/MoveTo",
+            data: { targetColumn, ticketId },
+            success: function () {
+                location.reload();
+            }
+        });
+    }
+
+    $("#@mainDivWithBtnsId").css('visibility', 'hidden');
+
+    $("#@whapperDiv")
+    .mouseover(function () { $("#@mainDivWithBtnsId").css("visibility", "visible"); })
+    .mouseout(function () { $("#@mainDivWithBtnsId").css('visibility', 'hidden'); });
+
+
+</script>
+
